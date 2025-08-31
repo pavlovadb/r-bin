@@ -4,7 +4,8 @@
   "description": "express app that listens for incoming HTTP requests and stores data",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "setup-db": "node setup_databases.js"
   },
   "keywords": [],
   "author": "",
