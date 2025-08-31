@@ -9,14 +9,19 @@ MongoDB will store request body
 ## Local Setup
 
 1. run `npm ci` to install dependencies from package-lock.json
-1. Install postgres (`brew install postgresql` on Mac) if you don't have it already
-1. Run postgres setup script: 
+2. Install postgres (`brew install postgresql` on Mac) if you don't have it already
 
-    ```
-    psql -U <your username> -f setup.sql
-    ```
+3. Copy `.env.example` to `.env` and replace `<USERNAME>` and `<PASSWORD>` with your database credentials.
 
-1. Install MongoDB if you don't have it already
+4. Run the database setup script:
+    ```
+    npm run setup-db
+    ```
+    This will:
+    - Create the `requestbin` PostgreSQL database if it doesn't exist.
+    - Drop/recreate tables and seed initial data in PostgreSQL.
+
+5. Install MongoDB if you don't have it already
 
     ```
     brew tap mongodb/brew
@@ -24,12 +29,12 @@ MongoDB will store request body
     mongod --version
     ```
 
-1. If this is your first time cloning the repo, create a 
+6. If this is your first time cloning the repo, create a 
 
     ```
     mkdir -p ./data/db
     ```
-1. Start MongoDB with the above data path (it connects on port 27017)
+7. Start MongoDB with the above data path (it connects on port 27017)
     ```
     mongod --dbpath=./data/db
     ```
