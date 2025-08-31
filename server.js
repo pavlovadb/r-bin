@@ -8,11 +8,7 @@ require("dotenv").config();
 const PORT = 3000;
 
 const pgClient = new Client({
-  user: "postgres",
-  host: "localhost",
-  database: "requestbin",
-  password: "",
-  port: 5432,
+  connectionString: process.env.REQUESTBIN_POSTGRES_URL,
 });
 
 async function startServer() {
