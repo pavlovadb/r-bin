@@ -10,8 +10,8 @@ const PORT = 3000;
 const pgClient = new Client({
   user: "postgres",
   host: "localhost",
-  password: "password",
   database: "requestbin",
+  password: "sasuke83",
   port: 5432,
 });
 
@@ -25,6 +25,7 @@ async function startServer() {
 
   try {
     await mongoose.connect("mongodb://localhost:27017/requestbin");
+
     console.log("Connected to MongoDB");
   } catch (err) {
     console.error("MongoDB connection error:");
@@ -34,6 +35,8 @@ async function startServer() {
 startServer();
 
 app.use(express.json());
+
+app.post("/mongo", async (req, rest) => {});
 
 // This route will handle all HTTP methods for the basket_path
 app.all("/:path", async (req, res) => {
@@ -58,17 +61,19 @@ app.all("/:path", async (req, res) => {
     "INSERT INTO request (basket_endpoint_id, method, header,  mongodb_path) values ($1, $2, $3, $4)",
     [basketId, method, header, mongodbPath]
   );
-
+  console.log("recieved a reqeuest to path", req.path);
   res.send({});
 });
 
 // Create basket
-app.post("/api/basket/:key", (req, res) => {
+app.post("/api/basket/:key", async (req, res) => {
   console.log(`you are creating basket: ${req.params.key}`);
 
   const path = req.params.key;
 
-  pgClient.query("INSERT INTO basket (endpoint_id) VALUES ($1)", [path]);
+  let result = await pgClient.query("INSERT INTO basket (path) VALUES ($1)", [
+    path,
+  ]);
 
   res.send({});
 });
