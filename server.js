@@ -11,7 +11,7 @@ const pgClient = new Client({
   user: "postgres",
   host: "localhost",
   database: "requestbin",
-  password: "sasuke83",
+  password: "",
   port: 5432,
 });
 
