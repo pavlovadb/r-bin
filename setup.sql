@@ -9,7 +9,7 @@ CREATE TABLE basket (
 );
 
 CREATE TABLE request (
-  id SERIAL PRIMARY KEY,
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   basket_path_name text NOT NULL REFERENCES basket (path_name) ON DELETE CASCADE,
   method text NOT NULL,
   header text NOT NULL,
