@@ -7,7 +7,6 @@ require("dotenv").config();
 const {
   getAllBaskets,
   createBasket,
-  getBasketByPath,
   getRequestsForBasket,
   deleteBasket,
   addRequest,
@@ -40,35 +39,14 @@ startServer();
 
 app.use(express.json());
 
-// This route will handle all HTTP methods for the basket_path
-app.all("/:path", async (req, res) => {
-  const method = req.method;
-  const path = req.path;
-  const header = req.headers;
-  const body = req.body; // Use for POST
-
-  // Pretend a GET just came in
-  // Query Postgres to find path id
-  const result = await getBasketByPath(path.replace("/", ""));
-
-  //TODO: add if statement to handle case where there is no such request bin
-  const basketId = result.id;
-
-  // Find body ref in mongoDB
-  const mongodbPath = "pretend this is a ref to mongoDB";
-
-  const request = await addRequest(basketId, method, header, mongodbPath);
-  console.log("recieved a reqeuest to path", req.path);
-  res.send(request);
-});
-
-// VIEW ALL BASKETS
-app.get("/api/baskets", async (req, res) => {
+// View all baskets
+app.get("/api/basket", async (req, res) => {
   const result = await getAllBaskets();
   res.send(result);
 });
 
 // Create basket
+// TODO: check for uniqueness of basket name
 app.post("/api/basket/:key", async (req, res) => {
   console.log(`you are creating basket: ${req.params.key}`);
 
@@ -78,19 +56,16 @@ app.post("/api/basket/:key", async (req, res) => {
   res.send(result);
 });
 
-// VIEW A BASKET and its requests
+// View a basket
 app.get("/api/basket/:key", async (req, res) => {
   const path = req.params.key;
-  const basket = await getBasketByPath(path);
-  const basketId = basket.id;
-
-  const basketRequests = await getRequestsForBasket(basketId);
+  const basketRequests = await getRequestsForBasket(path);
 
   // return result
   res.send(basketRequests);
 });
 
-// DELETE a basket
+// Delete a basket
 app.delete("/api/basket/:key", async (req, res) => {
   const path = req.params.key;
   const result = await deleteBasket(path); // returns row count of deleted rows
@@ -103,11 +78,25 @@ app.delete("/api/basket/:key", async (req, res) => {
   }
 });
 
-app.get("/api/basket", (req, res) => {
-  // TODO: I need to generate the url with key
-  console.log("you requested a basket");
-  res.send({});
+// This route will handle all HTTP methods for the basket_path
+// TODO: figure mongoDB
+app.all("/:path", async (req, res) => {
+  const method = req.method;
+  const path = req.path.replace("/", "");
+  const header = req.headers;
+  const body = req.body; // Used for POST
+
+  // Pretend a GET just came in
+
+  //TODO: add if statement to handle case where there is no such request bin
+  // Find body ref in mongoDB
+  const mongodbPath = "pretend this is a ref to mongoDB";
+
+  const request = await addRequest(path, method, header, mongodbPath);
+  res.sendStatus(200);
 });
+
+// TODO: Increment total count for requests per basket
 
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);

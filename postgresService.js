@@ -26,31 +26,18 @@ async function createBasket(path) {
   // make query to basket where path = req.params.key
   // RETRURN * means return newly inserted row
   const result = await pgClient.query(
-    "INSERT INTO basket (path) VALUES ($1) RETURNING *",
+    "INSERT INTO basket (path_name) VALUES ($1) RETURNING *",
     [path]
   );
   return result.rows[0];
 }
 
-// return specified basket
-async function getBasketByPath(path) {
-  // retrieve basket path
-  // query id value of row from `basket` where `path` = `req.path`
-  //  id |  path  | total_request
-  // ----+--------+---------------
-  //   1 | happy  |             5
-  const result = await pgClient.query("SELECT id FROM basket WHERE path = $1", [
-    path,
-  ]);
-  return result.rows[0];
-}
-
 // list all requests from basket
-async function getRequestsForBasket(basketId) {
-  // query rows from `request` where `basket_enpoint_id` = `basketId`
+async function getRequestsForBasket(basketPathName) {
+  // query rows from `request` where `basket_enpoint_id` = `basketPathName`
   const result = await pgClient.query(
-    "SELECT * FROM request WHERE basket_endpoint_id = $1",
-    [basketId]
+    "SELECT * FROM request WHERE basket_path_name = $1",
+    [basketPathName]
   );
   return result.rows;
 }
@@ -58,16 +45,17 @@ async function getRequestsForBasket(basketId) {
 // delete basket
 async function deleteBasket(path) {
   // delete row from `basket` table where path = req.params.key
-  const result = await pgClient.query("DELETE FROM basket WHERE path = $1", [
-    path,
-  ]);
+  const result = await pgClient.query(
+    "DELETE FROM basket WHERE path_name = $1",
+    [path]
+  );
   return result.rowCount;
 }
 //  add webhook requests to specified basket
-async function addRequest(basketId, method, header, mongodbPath) {
+async function addRequest(basketPathName, method, header, mongodbPath) {
   const result = await pgClient.query(
-    "INSERT INTO request (basket_endpoint_id, method, header, mongodb_path) VALUES ($1, $2, $3, $4)",
-    [basketId, method, header, mongodbPath]
+    "INSERT INTO request (basket_path_name, method, header, mongodb_path) VALUES ($1, $2, $3, $4)",
+    [basketPathName, method, header, mongodbPath]
   );
 
   return result.rows[0];
@@ -76,7 +64,6 @@ async function addRequest(basketId, method, header, mongodbPath) {
 module.exports = {
   getAllBaskets,
   createBasket,
-  getBasketByPath,
   getRequestsForBasket,
   deleteBasket,
   addRequest,
