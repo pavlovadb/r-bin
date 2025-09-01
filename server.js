@@ -1,23 +1,31 @@
 const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
-const { Client } = require("pg");
+// const { Client } = require("pg");
 const mongoose = require("mongoose");
 require("dotenv").config();
+const {
+  getAllBaskets,
+  createBasket,
+  getBasketByPath,
+  getRequestsForBasket,
+  deleteBasket,
+  addRequest,
+} = require("./postgresService");
 
 const PORT = 3000;
 
-const pgClient = new Client({
-  connectionString: process.env.REQUESTBIN_POSTGRES_URL,
-});
+// const pgClient = new Client({
+//   connectionString: process.env.REQUESTBIN_POSTGRES_URL,
+// });
 
 async function startServer() {
-  try {
-    await pgClient.connect();
-    console.log("Connected to PostgreSQL");
-  } catch (err) {
-    console.error("PostgreSQL connection error");
-  }
+  // try {
+  //   await pgClient.connect();
+  //   console.log("Connected to PostgreSQL");
+  // } catch (err) {
+  //   console.error("PostgreSQL connection error");
+  // }
 
   try {
     await mongoose.connect("mongodb://localhost:27017/requestbin");
@@ -32,8 +40,6 @@ startServer();
 
 app.use(express.json());
 
-app.post("/mongo", async (req, rest) => {});
-
 // This route will handle all HTTP methods for the basket_path
 app.all("/:path", async (req, res) => {
   const method = req.method;
@@ -43,22 +49,23 @@ app.all("/:path", async (req, res) => {
 
   // Pretend a GET just came in
   // Query Postgres to find path id
-  const result = await pgClient.query("SELECT id FROM basket WHERE path=$1", [
-    path.replace("/", ""),
-  ]);
+  const result = await getBasketByPath(path.replace("/", ""));
 
   //TODO: add if statement to handle case where there is no such request bin
-  const basketId = result.rows[0].id;
+  const basketId = result.id;
 
   // Find body ref in mongoDB
   const mongodbPath = "pretend this is a ref to mongoDB";
 
-  pgClient.query(
-    "INSERT INTO request (basket_endpoint_id, method, header,  mongodb_path) values ($1, $2, $3, $4)",
-    [basketId, method, header, mongodbPath]
-  );
+  const request = await addRequest(basketId, method, header, mongodbPath);
   console.log("recieved a reqeuest to path", req.path);
-  res.send({});
+  res.send(request);
+});
+
+// VIEW ALL BASKETS
+app.get("/api/baskets", async (req, res) => {
+  const result = await getAllBaskets();
+  res.send(result);
 });
 
 // Create basket
@@ -66,12 +73,34 @@ app.post("/api/basket/:key", async (req, res) => {
   console.log(`you are creating basket: ${req.params.key}`);
 
   const path = req.params.key;
+  const result = await createBasket(path);
+  // sends back newly created basket
+  res.send(result);
+});
 
-  let result = await pgClient.query("INSERT INTO basket (path) VALUES ($1)", [
-    path,
-  ]);
+// VIEW A BASKET and its requests
+app.get("/api/basket/:key", async (req, res) => {
+  const path = req.params.key;
+  const basket = await getBasketByPath(path);
+  const basketId = basket.id;
 
-  res.send({});
+  const basketRequests = await getRequestsForBasket(basketId);
+
+  // return result
+  res.send(basketRequests);
+});
+
+// DELETE a basket
+app.delete("/api/basket/:key", async (req, res) => {
+  const path = req.params.key;
+  const result = await deleteBasket(path); // returns row count of deleted rows
+
+  // if rowCount is more than 1 , row was deleted
+  if (result > 0) {
+    res.send("Basket deleted");
+  } else {
+    res.status(404).send("Not Found.");
+  }
 });
 
 app.get("/api/basket", (req, res) => {
