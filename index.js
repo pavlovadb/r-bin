@@ -1,7 +1,5 @@
 const express = require("express");
 const app = express();
-const bodyParser = require("body-parser");
-const mongoose = require("mongoose");
 require("dotenv").config();
 const {
   getAllBaskets,
@@ -10,6 +8,7 @@ const {
   deleteBasket,
   addRequest,
 } = require("./db_services/postgres_services");
+const mongoServices = require("./db_services/mongo_services");
 
 const PORT = 3000;
 
@@ -26,11 +25,10 @@ async function startServer() {
   // }
 
   try {
-    await mongoose.connect("mongodb://localhost:27017/requestbin");
-
+    await mongoServices.connectToMongoDB();
     console.log("Connected to MongoDB");
   } catch (err) {
-    console.error("MongoDB connection error:");
+    console.error("MongoDB connection error:", err);
   }
 }
 
@@ -78,21 +76,27 @@ app.delete("/api/basket/:key", async (req, res) => {
 });
 
 // This route will handle all HTTP methods for the basket_path
-// TODO: figure mongoDB
 app.all("/:path", async (req, res) => {
-  const method = req.method;
-  const path = req.path.replace("/", "");
-  const header = req.headers;
-  const body = req.body; // Used for POST
+  try {
+    const method = req.method;
+    const path = req.path.replace("/", "");
+    const headers = req.headers;
+    const body = req.body; // Used for POST, PUT, etc.
 
-  // Pretend a GET just came in
-
-  //TODO: add if statement to handle case where there is no such request bin
-  // Find body ref in mongoDB
-  const mongodbPath = "pretend this is a ref to mongoDB";
-
-  const request = await addRequest(path, method, header, mongodbPath);
-  res.sendStatus(200);
+    // TODO: add if statement to handle case where there is no such request bin
+    // First, store the request body in MongoDB
+    const savedRequestBody = await mongoServices.addRequestBody(body);
+    
+    // Then store the request metadata in PostgreSQL with the MongoDB reference
+    console.log(savedRequestBody._id)
+    const request = await addRequest(path, method, headers, savedRequestBody._id.toString());
+    console.log(request);
+    
+    res.sendStatus(200);
+  } catch (error) {
+    console.error("Error handling request:", error);
+    res.status(500).send("Internal Server Error");
+  }
 });
 
 // TODO: Increment total count for requests per basket
