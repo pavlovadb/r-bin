@@ -81,7 +81,7 @@ app.all("/:path", async (req, res) => {
     const method = req.method;
     const path = req.path.replace("/", "");
     const headers = req.headers;
-    const body = req.body; // Used for POST, PUT, etc.
+    const body = req.body || ""; // Used for POST, PUT, etc.
 
     // TODO: add if statement to handle case where there is no such request bin
     // First, store the request body in MongoDB
@@ -90,7 +90,9 @@ app.all("/:path", async (req, res) => {
     // Then store the request metadata in PostgreSQL with the MongoDB reference
     console.log(savedRequestBody._id)
     const request = await addRequest(path, method, headers, savedRequestBody._id.toString());
-    console.log(request);
+    
+    let test = await mongoServices.getRequestBody("68b764f1d9de2d9ad57bf964");
+    console.log(test);
     
     res.sendStatus(200);
   } catch (error) {
