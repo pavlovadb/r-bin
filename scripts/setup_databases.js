@@ -1,4 +1,8 @@
-// const bodyParser = require("body-parser"); // Unnecessary for this file right?
+/**
+ * Mongo schema 
+ */
+
+
 const { Client } = require("pg");
 const fs = require("fs")
 const mongoose = require("mongoose");

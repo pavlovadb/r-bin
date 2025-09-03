@@ -17,6 +17,8 @@ MongoDB will store request body
 
 1. Copy `.env.example` to `.env` and replace `<USERNAME>` and `<PASSWORD>` with your database credentials.
 
+1. Create a PostgreSQL database `requestbin` on your local machine by running `createdb requestbin`.
+
 1. Run the database setup script:
 
    ```
@@ -48,11 +50,11 @@ MongoDB will store request body
    mongod --dbpath=./data/db
    ```
 
-1. Start server
+  1. Start server
 
-```
-npm run start
-```
+  ```
+  npm run start
+  ```
 
 =====
 // Start up frontend
@@ -72,3 +74,12 @@ npm run start
    ```
 
 1. Open http://localhost:5173/
+    ```
+    mkdir -p ./data/db
+    ```
+
+1. Start server
+    ```
+    npm run start
+    ```
+    The start script concurrently starts MongoDB and uses `nodemon` to run `index.js`. Output from both MongoDB and the App are output to one terminal instance.
