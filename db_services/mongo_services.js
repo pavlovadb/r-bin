@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-require("dotenv").config();
 
 const requestSchema = new mongoose.Schema({
   request_body: {
@@ -20,8 +19,8 @@ async function connectToMongoDB() {
     await mongoose.connect(MONGO_URL);
     console.log('Successfully connected to MongoDB');
   } catch (error) {
-    console.error('Error connecting to MongoDB:', error);
-    throw error;
+    console.error('Error connecting to MongoDB:');
+    throw error
   }
 }
 
@@ -35,7 +34,7 @@ async function addRequestBody(requestBody) {
     const savedRequest = await newRequest.save();
     return savedRequest; //console.log(savedRequest)
   } catch (error) {
-    console.error('Error adding request body to MongoDB:', error);
+    console.error('Error adding request body to MongoDB:');
     throw error;
   }
 }
@@ -46,7 +45,7 @@ async function getRequestBody(requestId) {
     const request = await Request.findById(requestId);
     return request;
   } catch (error) {
-    console.error('Error reading request body from MongoDB:', error);
+    console.error('Error reading request body from MongoDB:');
     throw error;
   }
 }
@@ -57,7 +56,7 @@ async function deleteRequestBody(requestId) {
     const deletedRequest = await Request.findByIdAndDelete(requestId);
     return deletedRequest;
   } catch (error) {
-    console.error('Error deleting request body from MongoDB:', error);
+    console.error('Error deleting request body from MongoDB:');
     throw error;
   }
 }
