@@ -1,0 +1,145 @@
+/* App.css */
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  background-color: #f5f5f5;
+  color: #333;
+  margin: 0;
+  padding: 20px;
+}
+
+h1 {
+  text-align: center; /* Centers the text horizontally */
+  font-size: 3rem; /* Makes it big */
+  font-weight: bold; /* Makes it stand out */
+  color: #2c7a7b; /* Nice teal-ish color */
+  margin: 40px 0; /* Adds space above and below */
+  text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.2); /* subtle shadow for depth */
+}
+
+.app-container {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center; /* center all content */
+}
+
+.basket-list {
+  list-style: none;
+  padding: 0;
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* center the items */
+  gap: 15px; /* space between baskets */
+}
+
+.basket-list li {
+  width: 100%;
+  max-width: 400px; /* make them wider */
+}
+
+.basket-list a {
+  color: white; /* white text for contrast */
+  text-decoration: none;
+  padding: 16px 24px; /* bigger padding */
+  border: 1px solid #2c7a7b; /* same color as h1 */
+  background-color: #2c7a7b; /* same color as h1 */
+  border-radius: 6px;
+  display: block;
+  font-size: 1.2rem; /* bigger text */
+  transition: all 0.2s;
+  text-align: center; /* center text */
+}
+
+.basket-list a:hover {
+  background-color: #235d5e; /* slightly darker teal on hover */
+  border-color: #235d5e;
+}
+
+.create-basket-form {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.create-basket-form input {
+  flex: 1;
+  max-width: 300px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.create-basket-form button {
+  padding: 10px 20px;
+  border: 1px solid #2c7a7b; /* same color as h1 */
+  background-color: #2c7a7b; /* same color as h1 */
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.create-basket-form button:hover {
+  background-color: #235d5e; /* slightly darker teal on hover */
+  border-color: #235d5e;
+}
+
+.create-basket-form button:disabled {
+  background-color: #aaa;
+  border-color: #aaa;
+  cursor: not-allowed;
+}
+
+.basket-view-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.basket-view-buttons button {
+  padding: 8px 16px;
+  border: 1px solid #2c7a7b; /* same color as h1 */
+  background-color: #2c7a7b; /* same color as h1 */
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.basket-view-buttons button:hover {
+  background-color: #235d5e; /* slightly darker teal */
+  border-color: #235d5e;
+}
+
+.requests-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.request-item {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 16px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  text-align: left;
+}
+
+.request-item strong {
+  display: inline-block;
+  width: 70px;
+}
+
+.request-item pre {
+  background-color: #f0f0f0;
+  border: 1px solid #ddd;
+  padding: 8px;
+  border-radius: 4px;
+  overflow-x: auto;
+  margin-top: 4px;
+}
