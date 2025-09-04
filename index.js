@@ -12,17 +12,7 @@ const mongoServices = require("./db_services/mongo_services");
 
 const PORT = 3000;
 
-// const pgClient = new Client({
-//   connectionString: process.env.REQUESTBIN_POSTGRES_URL,
-// });
-
 async function startServer() {
-  // try {
-  //   await pgClient.connect();
-  //   console.log("Connected to PostgreSQL");
-  // } catch (err) {
-  //   console.error("PostgreSQL connection error");
-  // }
 
   try {
     await mongoServices.connectToMongoDB();
@@ -76,6 +66,7 @@ app.delete("/api/basket/:key", async (req, res) => {
 });
 
 // This route will handle all HTTP methods for the basket_path
+//getting a request to a basket
 app.all("/:path", async (req, res) => {
   try {
     const method = req.method;
@@ -91,8 +82,8 @@ app.all("/:path", async (req, res) => {
     console.log(savedRequestBody._id)
     const request = await addRequest(path, method, headers, savedRequestBody._id.toString());
     
-    let test = await mongoServices.getRequestBody("68b764f1d9de2d9ad57bf964");
-    console.log(test);
+    // let test = await mongoServices.getRequestBody("68b764f1d9de2d9ad57bf964");
+    // console.log(test);
     
     res.sendStatus(200);
   } catch (error) {
