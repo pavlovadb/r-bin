@@ -30,21 +30,28 @@ const BasketView = ({
   onDeleteBasket,
   onDeleteRequests,
   onRefreshRequests,
+  onRefreshBaskets,
 }) => {
   useEffect(() => {
-    const pollRequests = async () => {
+    const pollData = async () => {
       try {
-        const response = await axios.get(`/api/basket/${basketName}`);
-        onRefreshRequests(response.data);
+        // Fetch both requests and updated baskets data
+        const [requestsResponse, basketsResponse] = await Promise.all([
+          axios.get(`/api/basket/${basketName}`),
+          axios.get('/api/basket')
+        ]);
+        
+        onRefreshRequests(requestsResponse.data);
+        onRefreshBaskets(basketsResponse.data);
       } catch (error) {
-        console.error('Error polling requests:', error);
+        console.error('Error polling data:', error);
       }
     };
 
-    const interval = setInterval(pollRequests, 5000); // Poll every 5 seconds
+    const interval = setInterval(pollData, 5000); // Poll every 5 seconds
 
     return () => clearInterval(interval);
-  }, [basketName, onRefreshRequests]);
+  }, [basketName, onRefreshRequests, onRefreshBaskets]);
 
   return (
     <div>
@@ -202,6 +209,10 @@ function App() {
     setBasketRequests(newRequests);
   };
 
+  const handleRefreshBaskets = (updatedBaskets) => {
+    setBaskets(updatedBaskets);
+  };
+
   return (
     <div>
       <h1>Request Bin</h1>
@@ -223,6 +234,7 @@ function App() {
             onDeleteBasket={handleDeleteBasket}
             onDeleteRequests={handleDeleteRequests}
             onRefreshRequests={handleRefreshRequests}
+            onRefreshBaskets={handleRefreshBaskets}
           />
         )}
       </div>
