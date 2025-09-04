@@ -118,17 +118,34 @@ app.get("/api/basket/:key", async (req, res) => {
   // );
 });
 
+async function deleteRequestBodiesForBasket(basketPath) {
+  const basketRequests = await psqlServices.getRequestsForBasket(basketPath);
+        
+    // Iterate through basket requests and delete body from mongo
+    await serialForEach(basketRequests, async (request) => {
+      await mongoServices.deleteRequestBody(request.mongodb_path)
+    });
+}
+
+// Delete requests from a basket
+app.delete("/api/basket/:key/requests", async (req, res) => {
+  const path = req.params.key;
+
+  try {
+    await deleteRequestBodiesForBasket(path);
+    res.status(204).send("Requests deleted");
+  } catch(err) {
+    console.error(`Problem deleting all requests for ${path} : `, err.message);
+    return res.status(500).send('Internal Server Error');
+  }
+});
+
 // Delete a basket
 app.delete("/api/basket/:key", async (req, res) => {
   const path = req.params.key;
 
   try {
-    const basketRequests = await psqlServices.getRequestsForBasket(path);
-        
-    // Iterate through basket requests and delete body from mongo
-    await serialForEach(basketRequests, async (request) => {
-      await mongoServices.deleteRequestBody(request.mongodb_path)
-    })
+    await deleteRequestBodiesForBasket(path);
 
     // Delete basket from postgres. Returns count of deleted rows
     const result = await psqlServices.deleteBasket(path); 
@@ -156,7 +173,7 @@ app.all("/:path", async (req, res) => {
 
     // TODO: add if statement to handle case where there is no such request bin
     //const basket = await get
-    const pathExists = await basketExists(path);
+    const pathExists = await psqlServices.basketExists(path);
     if (!pathExists) return res.status(404).send(`Basket ${path} not found`);
 
     if (body) {

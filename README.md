@@ -25,11 +25,6 @@ MongoDB will store request body
    npm run setup-db
    ```
 
-   This will:
-
-   - Create the `requestbin` PostgreSQL database if it doesn't exist.
-   - Drop/recreate tables and seed initial data in PostgreSQL.
-
 1. Install MongoDB if you don't have it already
 
    ```
@@ -44,17 +39,11 @@ MongoDB will store request body
    mkdir -p ./data/db
    ```
 
-1. Start MongoDB with the above data path (it connects on port 27017)
+1. Start server. This command will concurrently start up mongoDB as well as the server application. Output from both is streamed to one terminal.
 
-   ```
-   mongod --dbpath=./data/db
-   ```
-
-  1. Start server
-
-  ```
-  npm run start
-  ```
+```
+npm run start
+```
 
 =====
 // Start up frontend
@@ -77,9 +66,3 @@ MongoDB will store request body
     ```
     mkdir -p ./data/db
     ```
-
-1. Start server
-    ```
-    npm run start
-    ```
-    The start script concurrently starts MongoDB and uses `nodemon` to run `index.js`. Output from both MongoDB and the App are output to one terminal instance.
