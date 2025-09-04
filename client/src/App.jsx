@@ -82,10 +82,10 @@ const BasketView = ({
                 <strong>Headers:</strong>
               </div>
               <pre>{request.header}</pre>
-              {request.mongodb_path && (
+              {request.body && (
                 <div>
                   <strong>Body:</strong>
-                  <pre>Body stored in MongoDB (ID: {request.mongodb_path})</pre>
+                  <pre>{request.body}</pre>
                 </div>
               )}
             </div>

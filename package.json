@@ -5,8 +5,10 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "setup-db": "node scripts/setup_databases.js",
-    "start": "nodemon index.js"
+    "start-mongo": "mongod --dbpath=./data/db > ./data/db/mongo.log",
+    "start-app": "nodemon index.js",
+    "setup-db": "psql -d requestbin -f setup.sql", 
+    "start": "concurrently --names \"MONGO,APP\" --prefix \"[{name}]\" \"npm run start-mongo\" \"npm run start-app\""
   },
   "keywords": [],
   "author": "",
@@ -20,6 +22,7 @@
     "pg": "^8.16.3"
   },
   "devDependencies": {
+    "concurrently": "^9.2.1",
     "nodemon": "^3.1.10"
   }
 }

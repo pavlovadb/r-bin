@@ -17,16 +17,13 @@ MongoDB will store request body
 
 1. Copy `.env.example` to `.env` and replace `<USERNAME>` and `<PASSWORD>` with your database credentials.
 
+1. Create a PostgreSQL database `requestbin` on your local machine by running `createdb requestbin`.
+
 1. Run the database setup script:
 
    ```
    npm run setup-db
    ```
-
-   This will:
-
-   - Create the `requestbin` PostgreSQL database if it doesn't exist.
-   - Drop/recreate tables and seed initial data in PostgreSQL.
 
 1. Install MongoDB if you don't have it already
 
@@ -42,13 +39,7 @@ MongoDB will store request body
    mkdir -p ./data/db
    ```
 
-1. Start MongoDB with the above data path (it connects on port 27017)
-
-   ```
-   mongod --dbpath=./data/db
-   ```
-
-1. Start server
+1. Start server. This command will concurrently start up mongoDB as well as the server application. Output from both is streamed to one terminal.
 
 ```
 npm run start
@@ -72,3 +63,6 @@ npm run start
    ```
 
 1. Open http://localhost:5173/
+    ```
+    mkdir -p ./data/db
+    ```
