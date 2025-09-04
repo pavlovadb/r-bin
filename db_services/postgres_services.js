@@ -40,6 +40,16 @@ async function createBasket(path) {
   }
 }
 
+// check if basket exists
+async function basketExists(path) {
+  const result = await pgClient.query(
+    "SELECT 1 FROM basket WHERE path_name = $1 LIMIT 1",
+    [path]
+  );
+
+  return result.rowCount > 0;
+}
+
 // list all requests from basket
 async function getRequestsForBasket(basketPathName) {
   try {
@@ -83,6 +93,7 @@ module.exports = {
   connectToPostgres,
   getAllBaskets,
   createBasket,
+  basketExists,
   getRequestsForBasket,
   deleteBasket,
   addRequest,

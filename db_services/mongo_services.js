@@ -43,7 +43,12 @@ async function addRequestBody(requestBody) {
 async function getRequestBody(requestId) {
   try {
     const request = await Request.findById(requestId);
-    return request;
+    //console.log(requestId, ' From mongo', request.request_body)
+    if (request.request_body) {
+      return JSON.stringify(request.request_body); 
+    } else {
+      return null;
+    }
   } catch (error) {
     console.error('Error reading request body from MongoDB:');
     throw error;
