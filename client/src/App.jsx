@@ -1,8 +1,11 @@
 import { useState, useEffect } from "react";
+import { Routes, Route, useNavigate, useParams, Navigate } from "react-router-dom";
 import axios from "axios";
 import "./App.css";
 
-const BasketList = ({ baskets, onBasketClick }) => {
+const BasketList = ({ baskets }) => {
+  const navigate = useNavigate();
+  
   return (
     <ul className="basket-list">
       {baskets.map((basket) => (
@@ -11,7 +14,7 @@ const BasketList = ({ baskets, onBasketClick }) => {
             href="#"
             onClick={(e) => {
               e.preventDefault();
-              onBasketClick(basket.path_name);
+              navigate(`/web/${basket.path_name}`);
             }}
           >
             {basket.path_name}
@@ -140,10 +143,68 @@ const CreateBasket = ({ onBasketCreated }) => {
   );
 };
 
+const BasketViewWrapper = ({ 
+  baskets, 
+  basketRequests, 
+  setBasketRequests, 
+  setBaskets,
+  handleDeleteBasket,
+  handleDeleteRequests,
+  handleRefreshRequests,
+  handleRefreshBaskets
+}) => {
+  const { basketName } = useParams();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    async function fetchBasketData() {
+      try {
+        const response = await axios.get(`/api/basket/${basketName}`);
+        setBasketRequests(response.data);
+      } catch (error) {
+        console.error("Error fetching basket requests:", error);
+      }
+    }
+
+    if (basketName) {
+      fetchBasketData();
+    }
+  }, [basketName, setBasketRequests]);
+
+  const handleBackClick = () => {
+    navigate('/web');
+  };
+
+  const onDeleteBasket = async (basketName) => {
+    try {
+      console.log(basketName);
+      await handleDeleteBasket(basketName);
+      navigate('/web');
+    } catch (error) {
+      console.error("Error deleting basket:", error);
+      alert("Failed to delete basket");
+    }
+  };
+
+  return (
+    <BasketView
+      basketName={basketName}
+      requests={basketRequests}
+      onBackClick={handleBackClick}
+      lifetimeRequests={
+        baskets.find((b) => b.path_name === basketName)
+          ?.total_request || 0
+      }
+      onDeleteBasket={onDeleteBasket}
+      onDeleteRequests={handleDeleteRequests}
+      onRefreshRequests={handleRefreshRequests}
+      onRefreshBaskets={handleRefreshBaskets}
+    />
+  );
+};
+
 function App() {
   const [baskets, setBaskets] = useState([]);
-  const [currentView, setCurrentView] = useState("list"); // 'list' or 'basket'
-  const [selectedBasket, setSelectedBasket] = useState(null);
   const [basketRequests, setBasketRequests] = useState([]);
 
   useEffect(() => {
@@ -163,36 +224,11 @@ function App() {
     setBaskets((prevBaskets) => [...prevBaskets, newBasket]);
   };
 
-  const handleBasketClick = async (basketName) => {
-    try {
-      const response = await axios.get(`/api/basket/${basketName}`);
-      setSelectedBasket(basketName);
-      setBasketRequests(response.data);
-      setCurrentView("basket");
-    } catch (error) {
-      console.error("Error fetching basket requests:", error);
-    }
-  };
-
-  const handleBackClick = () => {
-    setCurrentView("list");
-    setSelectedBasket(null);
-    setBasketRequests([]);
-  };
-
   const handleDeleteBasket = async (basketName) => {
-    try {
-      await axios.delete(`/api/basket/${basketName}`);
-      setBaskets((prevBaskets) =>
-        prevBaskets.filter((basket) => basket.path_name !== basketName)
-      );
-      setCurrentView("list");
-      setSelectedBasket(null);
-      setBasketRequests([]);
-    } catch (error) {
-      console.error("Error deleting basket:", error);
-      alert("Failed to delete basket");
-    }
+    await axios.delete(`/api/basket/${basketName}`);
+    setBaskets((prevBaskets) =>
+      prevBaskets.filter((basket) => basket.path_name !== basketName)
+    );
   };
 
   const handleDeleteRequests = async (basketName) => {
@@ -217,26 +253,27 @@ function App() {
     <div>
       <h1>Request Bin</h1>
       <div className="app-container">
-        {currentView === "list" ? (
-          <>
-            <CreateBasket onBasketCreated={handleBasketCreated} />
-            <BasketList baskets={baskets} onBasketClick={handleBasketClick} />
-          </>
-        ) : (
-          <BasketView
-            basketName={selectedBasket}
-            requests={basketRequests}
-            onBackClick={handleBackClick}
-            lifetimeRequests={
-              baskets.find((b) => b.path_name === selectedBasket)
-                ?.total_request || 0
-            }
-            onDeleteBasket={handleDeleteBasket}
-            onDeleteRequests={handleDeleteRequests}
-            onRefreshRequests={handleRefreshRequests}
-            onRefreshBaskets={handleRefreshBaskets}
-          />
-        )}
+        <Routes>
+          <Route path="/" element={<Navigate to="/web" replace />} />
+          <Route path="/web" element={
+            <>
+              <CreateBasket onBasketCreated={handleBasketCreated} />
+              <BasketList baskets={baskets} />
+            </>
+          } />
+          <Route path="/web/:basketName" element={
+            <BasketViewWrapper 
+              baskets={baskets}
+              basketRequests={basketRequests}
+              setBasketRequests={setBasketRequests}
+              setBaskets={setBaskets}
+              handleDeleteBasket={handleDeleteBasket}
+              handleDeleteRequests={handleDeleteRequests}
+              handleRefreshRequests={handleRefreshRequests}
+              handleRefreshBaskets={handleRefreshBaskets}
+            />
+          } />
+        </Routes>
       </div>
     </div>
   );

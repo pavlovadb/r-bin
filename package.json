@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start-mongo": "mongod --dbpath=./data/db > ./data/db/mongo.log",
     "start-app": "nodemon index.js",
-    "setup-db": "psql -d requestbin -f setup.sql", 
+    "setup-db": "psql -U postgres -d requestbin -f setup.sql", 
     "start": "concurrently --names \"MONGO,APP\" --prefix \"[{name}]\" \"npm run start-mongo\" \"npm run start-app\""
   },
   "keywords": [],
