@@ -12,6 +12,10 @@ MongoDB will store request body
 
 // for backend server
 
+1. run
+   ```
+   cd server
+   ```
 1. run `npm ci` to install dependencies from package-lock.json
 1. Install postgres (`brew install postgresql` on Mac) if you don't have it already
 
@@ -63,6 +67,3 @@ npm run start
    ```
 
 1. Open http://localhost:5173/
-    ```
-    mkdir -p ./data/db
-    ```
