@@ -39,18 +39,18 @@ AFTER INSERT ON request
 FOR EACH ROW
 EXECUTE FUNCTION increment_total_request();
 
--- Create seed data for basket table
-INSERT INTO basket (path_name, total_request) 
-	VALUES 
-    ('happy', 5),
-    ('burger', DEFAULT);
+-- -- Create seed data for basket table
+-- INSERT INTO basket (path_name, total_request) 
+-- 	VALUES 
+--     ('happy', DEFAULT),
+--     ('burger', DEFAULT);
 
--- Create seed data for request table
-INSERT INTO request (basket_path_name, method, header, mongodb_path) 
-	VALUES (
-	  'happy',
-	  'POST',
-	  '{ "Accept": "*/*", "Connection": "close", "Content-Length": "7635", "Content-Type": "application/json" }',
-	  '68b254139d875e0861ad9f6d'
-	);
+-- -- Create seed data for request table
+-- INSERT INTO request (basket_path_name, method, header, mongodb_path) 
+-- 	VALUES (
+-- 	  'happy',
+-- 	  'POST',
+-- 	  '{ "Accept": "*/*", "Connection": "close", "Content-Length": "7635", "Content-Type": "application/json" }',
+-- 	  '68b254139d875e0861ad9f6d'
+-- 	);
 	

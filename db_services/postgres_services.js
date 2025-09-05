@@ -89,6 +89,10 @@ async function addRequest(basketPathName, method, header, mongodbPath) {
   }
 }
 
+async function deleteRequestsFromBasket(basketName) {
+  const result = await pgClient.query("DELETE FROM request WHERE basket_path_name = $1", [basketName]);
+}
+
 module.exports = {
   connectToPostgres,
   getAllBaskets,
@@ -97,4 +101,5 @@ module.exports = {
   getRequestsForBasket,
   deleteBasket,
   addRequest,
+  deleteRequestsFromBasket
 };

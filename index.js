@@ -3,9 +3,8 @@ const app = express();
 require("dotenv").config();
 const psqlServices = require("./db_services/postgres_services");
 const mongoServices = require("./db_services/mongo_services");
-const { mongo } = require("mongoose");
 
-const PORT = 3000;
+const PORT = process.env.PORT;
 
 async function startServer() {
 
@@ -46,7 +45,6 @@ app.get("/api/basket", async (req, res) => {
 });
 
 // Create basket
-// TODO: check for uniqueness of basket name
 app.post("/api/basket/:key", async (req, res) => {
   const path = req.params.key;
   try {
@@ -108,20 +106,14 @@ app.get("/api/basket/:key", async (req, res) => {
     console.error(`GET /api/basket/${path} error: `, err.message);
     return res.status(500).send('Internal Server Error');
   }
-  // const mergedRequests = await Promise.all(
-  //   basketRequests.map(async request => {
-  //     const mongoPath = request.mongodb_path;
-  //     const requestBody = await mongoServices.getRequestBody(mongoPath);
-  //     request.body = requestBody;
-  //     return request;
-  //   })
-  // );
 });
 
 async function deleteRequestBodiesForBasket(basketPath) {
   const basketRequests = await psqlServices.getRequestsForBasket(basketPath);
-        
     // Iterate through basket requests and delete body from mongo
+
+    await psqlServices.deleteRequestsFromBasket(basketPath);
+
     await serialForEach(basketRequests, async (request) => {
       await mongoServices.deleteRequestBody(request.mongodb_path)
     });
@@ -163,7 +155,7 @@ app.delete("/api/basket/:key", async (req, res) => {
 });
 
 // This route will handle all HTTP methods for the basket_path
-//getting a request to a basket
+// getting a request to a basket
 app.all("/:path", async (req, res) => {
   try {
     const method = req.method;
@@ -171,8 +163,6 @@ app.all("/:path", async (req, res) => {
     const headers = req.headers;
     const body = req.body || ""; // Used for POST, PUT, etc.
 
-    // TODO: add if statement to handle case where there is no such request bin
-    //const basket = await get
     const pathExists = await psqlServices.basketExists(path);
     if (!pathExists) return res.status(404).send(`Basket ${path} not found`);
 
@@ -185,8 +175,6 @@ app.all("/:path", async (req, res) => {
     } else {
       await psqlServices.addRequest(path, method, headers, null);
     }
-    // let test = await mongoServices.getRequestBody("68b764f1d9de2d9ad57bf964");
-    // console.log(test);
     
     res.sendStatus(200);
   } catch (err) {
@@ -194,8 +182,6 @@ app.all("/:path", async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 });
-
-// TODO: Increment total count for requests per basket
 
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
