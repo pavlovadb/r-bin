@@ -69,6 +69,7 @@ const BasketView = ({
       </div>
 
       <h2>Basket: {basketName}</h2>
+      <p><strong>Send requests to:</strong> <code>localhost:3000/{basketName}</code></p>
       <p>Current requests: {requests.length}</p>
       <p>Lifetime requests: {lifetimeRequests}</p>
 
