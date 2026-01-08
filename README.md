@@ -1,8 +1,8 @@
 # RequestBin
 
-Express app that listens for incoming HTTP requests and stores data
+Express app that listens for incoming HTTP requests and stores their data
 
-React app displays list of baskets, the requests inside each basket, allow users to create new baskets and delete requests.
+React app displays list of baskets, the requests inside each basket, allow users to create new baskets and delete requests. Generates and displays a shortened URL endpoint for requests, such as webhooks to use
 
 PostgreSQL will store method, url, headers, timestamp
 
@@ -10,10 +10,10 @@ MongoDB will store request body
 
 ## Local Setup
 
-// for backend server
+### Server
 
 1. run
-   ```
+   ```bash
    cd server
    ```
 1. run `npm ci` to install dependencies from package-lock.json
@@ -25,19 +25,19 @@ MongoDB will store request body
 
 1. Run the database setup script:
 
-   ```
+   ```bash
    npm run setup-db
    ```
 
 1. Install MongoDB if you don't have it already
 
-   ```
+   ```bash
    brew tap mongodb/brew
    brew install mongodb-community
    mongod --version
    ```
 
-1. If this is your first time cloning the repo, create a
+1. If this is your first time cloning the repo, create a data directory
 
    ```
    mkdir -p ./data/db
@@ -49,10 +49,9 @@ MongoDB will store request body
 npm run start
 ```
 
-=====
-// Start up frontend
+### Client
 
-1. Switch to client directory
+1. run
 
    ```
    cd client
@@ -60,7 +59,7 @@ npm run start
 
 1. run `npm ci` to install dependencies from package-lock.json
 
-1. Run app
+1. run app
 
    ```
    npm run dev
