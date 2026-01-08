@@ -1,4 +1,4 @@
-# RequestBin
+# RBin
 
 Express app that listens for incoming HTTP requests and stores their data
 
